@@ -16,6 +16,7 @@ import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.common.document.DocumentField;
 import org.elasticsearch.common.settings.Settings;
 
 import org.elasticsearch.common.unit.TimeValue;
@@ -234,8 +235,18 @@ public class EsReader extends Reader {
                 if (containsId) {
                     recordMap.put("_id", hit.getId());
                 }
+                Map<String, DocumentField> fields = hit.getFields();
                 Map<String, Object> parent = JSON.parseObject(hit.getSourceAsString(), LinkedHashMap.class);
-                recordMap.putAll(parent);
+                //按照include的顺序重新排序
+                Map<String, Object> sortedParent = new LinkedHashMap<>();
+                for(String include:includes){
+                    if(parent.containsKey(include)){
+                        sortedParent.put(include,parent.get(include));
+                    }else if(fields.containsKey(include)){
+                        sortedParent.put(include,fields.get(include).getValue());
+                    }
+                }
+                recordMap.putAll(sortedParent);
                 this.transportOneRecord(recordSender, recordMap);
                 recordMap.clear();
             }

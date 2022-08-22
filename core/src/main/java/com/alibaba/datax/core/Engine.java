@@ -205,6 +205,10 @@ public class Engine {
     public static void main(String[] args) throws Exception {
         int exitCode = 0;
         try {
+//            //设置运行的datax的家目录
+//            System.setProperty("datax.home", "D:\\Workspace\\DataX\\target\\datax\\datax");
+//            //设置datax的运行脚本信息
+//            args = new String[]{"-mode", "standalone", "-jobid", "-1", "-job", "C:\\Users\\Gustab.M\\Desktop\\fsdownload\\0268cea0a3edb36a2018454c888a6062.json"};
             Engine.entry(args);
         } catch (Throwable e) {
             exitCode = 1;
